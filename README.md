@@ -1,7 +1,7 @@
 # OrderManagementSystem
 A web-based order management system for cafes and restaurants built using Core Java, Servlets, JDBC, and MySQL
 
-# Order Management System ☕
+# Order Management System 
 
 A web-based order management system designed for local cafes and newly opened restaurants.
 
@@ -31,7 +31,6 @@ This system allows customers to register, login, browse the menu, and place orde
 CREATE DATABASE cafe_db;
 USE cafe_db;
 ```
-Run the SQL scripts in `/sql/schema.sql` to create tables.
 
 ## Default Admin Login
 - Email: `admin@cafe.com`
