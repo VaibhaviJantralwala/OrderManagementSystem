@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #FDF6EE;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #2C1810;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-family: 'Playfair Display', serif;
+            color: white;
+            font-size: 22px;
+        }
+
+        .navbar a {
+            color: #C96A2B;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .content { padding: 32px; }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+
+        .tab-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            background: white;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: #C96A2B;
+            color: white;
+        }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+        }
+
+        .card h2 {
+            font-family: 'Playfair Display', serif;
+            color: #2C1810;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .input-group { margin-bottom: 0; }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid #EEE;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            background: #FAFAFA;
+            transition: border 0.2s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            border-color: #C96A2B;
+            background: white;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            background: #C96A2B;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 16px;
+        }
+
+        .btn:hover { background: #A8521E; }
+
+        .btn-danger {
+            background: #E53935;
+            padding: 8px 16px;
+            margin-top: 0;
+            font-size: 13px;
+        }
+
+        .btn-danger:hover { background: #C62828; }
+
+        .btn-secondary {
+            background: #666;
+            padding: 8px 16px;
+            margin-top: 0;
+            font-size: 13px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #999;
+            font-weight: 500;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #F8F8F8;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-pending { background: #FFF3E0; color: #E65100; }
+        .badge-preparing { background: #E3F2FD; color: #1565C0; }
+        .badge-ready { background: #E8F5E9; color: #2E7D32; }
+        .badge-delivered { background: #F3E5F5; color: #6A1B9A; }
+        .badge-cancelled { background: #FFEBEE; color: #C62828; }
+
+        .status-select {
+            padding: 6px 10px;
+            border: 1.5px solid #EEE;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>☕ BrewHouse — Admin</h1>
+        <a href="../logout">Logout</a>
+    </div>
+
+    <div class="content">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('menu')">Menu Items</button>
+            <button class="tab-btn" onclick="switchTab('orders')">Orders</button>
+        </div>
+
+        <!-- Menu Section -->
+        <div id="menu" class="section active">
+            <div class="card">
+                <h2>Add New Item</h2>
+                <form action="../admin" method="post">
+                    <input type="hidden" name="action" value="addItem">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Item Name</label>
+                            <input type="text" name="name" placeholder="e.g. Cappuccino" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Category</label>
+                            <select name="category">
+                                <option value="Coffee">Coffee</option>
+                                <option value="Tea">Tea</option>
+                                <option value="Food">Food</option>
+                                <option value="Dessert">Dessert</option>
+                                <option value="Cold Drinks">Cold Drinks</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Price (₹)</label>
+                            <input type="number" name="price" placeholder="e.g. 150" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Image URL</label>
+                            <input type="text" name="imageUrl" placeholder="https://...">
+                        </div>
+                        <div class="input-group" style="grid-column: span 2;">
+                            <label>Description</label>
+                            <textarea name="description" rows="2" placeholder="Short description..."></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Add Item</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>All Menu Items</h2>
+                <table id="menu-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="menu-body">
+                        <tr><td colspan="5" style="text-align:center; color:#999;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Orders Section -->
+        <div id="orders" class="section">
+            <div class="card">
+                <h2>All Orders</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>User ID</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                            <th>Update</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-body">
+                        <tr><td colspan="6" style="text-align:center; color:#999;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
+            if (tab === 'menu') loadMenu();
+            if (tab === 'orders') loadOrders();
+        }
+
+        function loadMenu() {
+            fetch('../api/menu')
+                .then(r => r.json())
+                .then(items => {
+                    const tbody = document.getElementById('menu-body');
+                    tbody.innerHTML = items.map(item => `
+                        <tr>
+                            <td>${item.name}</td>
+                            <td>${item.category}</td>
+                            <td>₹${item.price}</td>
+                            <td><span class="badge ${item.available ? 'badge-ready' : 'badge-cancelled'}">${item.available ? 'Available' : 'Unavailable'}</span></td>
+                            <td>
+                                <form action="../admin" method="post" style="display:inline">
+                                    <input type="hidden" name="action" value="deleteItem">
+                                    <input type="hidden" name="id" value="${item.id}">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    `).join('');
+                });
+        }
+
+        function loadOrders() {
+            fetch('../api/orders')
+                .then(r => r.json())
+                .then(orders => {
+                    const tbody = document.getElementById('orders-body');
+                    tbody.innerHTML = orders.map(order => `
+                        <tr>
+                            <td>#${order.id}</td>
+                            <td>${order.userId}</td>
+                            <td>₹${order.totalAmount}</td>
+                            <td><span class="badge badge-${order.status}">${order.status}</span></td>
+                            <td>${order.createdAt}</td>
+                            <td>
+                                <form action="../admin" method="post" style="display:inline">
+                                    <input type="hidden" name="action" value="updateStatus">
+                                    <input type="hidden" name="orderId" value="${order.id}">
+                                    <select name="status" class="status-select">
+                                        <option value="pending">Pending</option>
+                                        <option value="preparing">Preparing</option>
+                                        <option value="ready">Ready</option>
+                                        <option value="delivered">Delivered</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-secondary">Update</button>
+                                </form>
+                            </td>
+                        </tr>
+                    `).join('');
+                });
+        }
+
+        loadMenu();
+    </script>
+</body>
+</html>

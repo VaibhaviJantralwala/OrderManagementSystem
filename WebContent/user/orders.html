@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #FDF6EE;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #2C1810;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-family: 'Playfair Display', serif;
+            color: white;
+            font-size: 22px;
+        }
+
+        .nav-links { display: flex; gap: 24px; align-items: center; }
+
+        .nav-links a {
+            color: #C96A2B;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .content { padding: 32px; }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: #2C1810;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 700px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-info h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 17px;
+            color: #2C1810;
+            margin-bottom: 6px;
+        }
+
+        .order-info p {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .order-right { text-align: right; }
+
+        .order-amount {
+            font-size: 20px;
+            font-weight: 600;
+            color: #C96A2B;
+            margin-bottom: 8px;
+        }
+
+        .badge {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-pending { background: #FFF3E0; color: #E65100; }
+        .badge-preparing { background: #E3F2FD; color: #1565C0; }
+        .badge-ready { background: #E8F5E9; color: #2E7D32; }
+        .badge-delivered { background: #F3E5F5; color: #6A1B9A; }
+        .badge-cancelled { background: #FFEBEE; color: #C62828; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: #2C1810;
+            margin-bottom: 10px;
+        }
+
+        .empty-state a {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 12px 28px;
+            background: #C96A2B;
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>☕ BrewHouse</h1>
+        <div class="nav-links">
+            <a href="menu.html">Menu</a>
+            <a href="../logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1 class="page-title">My Orders</h1>
+        <p class="page-subtitle">Track your orders here</p>
+
+        <div class="orders-list" id="orders-list">
+            <p style="color:#999">Loading orders...</p>
+        </div>
+    </div>
+
+    <script>
+        fetch('../api/orders/user')
+            .then(r => r.json())
+            .then(orders => {
+                const list = document.getElementById('orders-list');
+
+                if (orders.length === 0) {
+                    list.innerHTML = `
+                        <div class="empty-state">
+                            <h2>No orders yet!</h2>
+                            <p>Looks like you haven't ordered anything.</p>
+                            <a href="menu.html">Browse Menu</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                list.innerHTML = orders.map(order => `
+                    <div class="order-card">
+                        <div class="order-info">
+                            <h3>Order #${order.id}</h3>
+                            <p>${order.createdAt}</p>
+                        </div>
+                        <div class="order-right">
+                            <div class="order-amount">₹${order.totalAmount}</div>
+                            <span class="badge badge-${order.status}">${order.status}</span>
+                        </div>
+                    </div>
+                `).join('');
+            });
+    </script>
+</body>
+</html>

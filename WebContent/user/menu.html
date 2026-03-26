@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #FDF6EE;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #2C1810;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-family: 'Playfair Display', serif;
+            color: white;
+            font-size: 22px;
+        }
+
+        .nav-links { display: flex; gap: 24px; align-items: center; }
+
+        .nav-links a {
+            color: #C96A2B;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .content { padding: 32px; }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: #2C1810;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .categories {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        .cat-btn {
+            padding: 8px 20px;
+            border: 1.5px solid #EEE;
+            border-radius: 20px;
+            background: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .cat-btn.active {
+            background: #C96A2B;
+            color: white;
+            border-color: #C96A2B;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .menu-card:hover { transform: translateY(-4px); }
+
+        .menu-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #F5F0EB;
+        }
+
+        .menu-card-body { padding: 18px; }
+
+        .menu-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 17px;
+            color: #2C1810;
+            margin-bottom: 6px;
+        }
+
+        .menu-card p {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .menu-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: 600;
+            color: #C96A2B;
+        }
+
+        .add-btn {
+            padding: 8px 18px;
+            background: #C96A2B;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .add-btn:hover { background: #A8521E; }
+
+        /* Cart */
+        .cart-bar {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #2C1810;
+            color: white;
+            padding: 16px 28px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        .cart-bar span { font-size: 14px; }
+        .cart-bar strong { color: #C96A2B; }
+
+        .checkout-btn {
+            padding: 10px 22px;
+            background: #C96A2B;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .checkout-btn:hover { background: #A8521E; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>☕ BrewHouse</h1>
+        <div class="nav-links">
+            <a href="orders.html">My Orders</a>
+            <a href="../logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1 class="page-title">Our Menu</h1>
+        <p class="page-subtitle">Fresh, made with love ☕</p>
+
+        <div class="categories">
+            <button class="cat-btn active" onclick="filterCategory('all', this)">All</button>
+            <button class="cat-btn" onclick="filterCategory('Coffee', this)">Coffee</button>
+            <button class="cat-btn" onclick="filterCategory('Tea', this)">Tea</button>
+            <button class="cat-btn" onclick="filterCategory('Food', this)">Food</button>
+            <button class="cat-btn" onclick="filterCategory('Dessert', this)">Dessert</button>
+            <button class="cat-btn" onclick="filterCategory('Cold Drinks', this)">Cold Drinks</button>
+        </div>
+
+        <div class="menu-grid" id="menu-grid">
+            <p style="color:#999">Loading menu...</p>
+        </div>
+    </div>
+
+    <div class="cart-bar" id="cart-bar">
+        <span>🛒 <strong id="cart-count">0</strong> items · <strong>₹<span id="cart-total">0</span></strong></span>
+        <button class="checkout-btn" onclick="placeOrder()">Place Order</button>
+    </div>
+
+    <script>
+        let allItems = [];
+        let cart = [];
+
+        fetch('../api/menu')
+            .then(r => r.json())
+            .then(items => {
+                allItems = items;
+                renderMenu(items);
+            });
+
+        function renderMenu(items) {
+            const grid = document.getElementById('menu-grid');
+            if (items.length === 0) {
+                grid.innerHTML = '<p style="color:#999">No items found.</p>';
+                return;
+            }
+            grid.innerHTML = items.map(item => `
+                <div class="menu-card" data-category="${item.category}">
+                    <img src="${item.imageUrl || 'https://via.placeholder.com/300x180?text=No+Image'}" alt="${item.name}">
+                    <div class="menu-card-body">
+                        <h3>${item.name}</h3>
+                        <p>${item.description || ''}</p>
+                        <div class="menu-card-footer">
+                            <span class="price">₹${item.price}</span>
+                            <button class="add-btn" onclick="addToCart(${item.id}, '${item.name}', ${item.price})">Add +</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterCategory(cat, btn) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filtered = cat === 'all' ? allItems : allItems.filter(i => i.category === cat);
+            renderMenu(filtered);
+        }
+
+        function addToCart(id, name, price) {
+            cart.push({ id, name, price });
+            updateCartBar();
+        }
+
+        function updateCartBar() {
+            const bar = document.getElementById('cart-bar');
+            bar.style.display = cart.length > 0 ? 'flex' : 'none';
+            document.getElementById('cart-count').textContent = cart.length;
+            document.getElementById('cart-total').textContent = cart.reduce((s, i) => s + i.price, 0).toFixed(2);
+        }
+
+        function placeOrder() {
+            const total = cart.reduce((s, i) => s + i.price, 0);
+            const form = document.createElement('form');
+            form.method = 'post';
+            form.action = '../user';
+            form.innerHTML = `
+                <input type="hidden" name="action" value="placeOrder">
+                <input type="hidden" name="totalAmount" value="${total}">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+</body>
+</html>
